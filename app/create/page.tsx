@@ -16,11 +16,17 @@ import { Upload, ImageIcon, LinkIcon, FileText, Loader2 } from "lucide-react"
 export default function CreatePage() {
   const [content, setContent] = useState("")
   const [isOriginal, setIsOriginal] = useState(false)
-  const [originalLink, setOriginalLink] = useState("")
+  //const [originalLink, setOriginalLink] = useState("")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
+  const [licenseType, setLicenseType] = useState<'creative-commons' | 'token-bound-nft' | null>(null)
   const [ccLicense, setCcLicense] = useState("CC BY-NC")
+  const [tbnlCommercial, setTbnlCommercial] = useState<'C' | 'NC'>('NC')
+  const [tbnlDerivatives, setTbnlDerivatives] = useState<'D' | 'DT' | 'DTSA' | 'ND'>('D')
+  const [tbnlPublicLicense, setTbnlPublicLicense] = useState<'PL' | 'NPL'>('NPL')
+  const [tbnlAuthority, setTbnlAuthority] = useState<'Ledger' | 'Legal'>('Legal')
+  //const [hoveredLicense, setHoveredLicense] = useState<'token-bound-nft' | 'creative-commons' | null>(null)
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -50,10 +56,10 @@ export default function CreatePage() {
       return
     }
 
-    if (isOriginal && !originalLink.trim()) {
+    if (isOriginal && !licenseType) {
       toast({
         title: "Error",
-        description: "Please provide a link for original statements",
+        description: "Please select a license for your original statement",
         variant: "destructive",
       })
       return
@@ -62,13 +68,39 @@ export default function CreatePage() {
     setIsSubmitting(true)
 
     try {
+      // Prepare license metadata following Lens Protocol standards
+      let licenseValue = null
+      if (isOriginal) {
+        if (licenseType === 'creative-commons') {
+          licenseValue = ccLicense
+        } else if (licenseType === 'token-bound-nft') {
+          licenseValue = `TBNL-${tbnlCommercial}-${tbnlDerivatives}-${tbnlPublicLicense}-${tbnlAuthority}`
+        }
+      }
+
       // Simulate API call to create post
       await new Promise((resolve) => setTimeout(resolve, 2000))
 
       // In a real app, you would:
       // 1. Upload media to Grove storage if selectedFile exists
-      // 2. Create post via Lens Protocol SDK
-      // 3. Handle the response
+      // 2. Create post metadata with license information:
+      //    const metadata = textOnly({
+      //      content,
+      //      ...(licenseValue && {
+      //        attributes: [
+      //          {
+      //            type: "String",
+      //            key: "license",
+      //            value: licenseValue
+      //          }
+      //        ]
+      //      })
+      //    })
+      // 3. Upload metadata to storage and create post via Lens Protocol SDK
+
+      console.log('Post content:', content)
+      console.log('License info:', licenseValue ? { type: "String", key: "license", value: licenseValue } : 'No license')
+      //console.log('Original statement link:', isOriginal ? originalLink : 'Not marked as original')
 
       toast({
         title: "Success",
@@ -78,7 +110,7 @@ export default function CreatePage() {
       // Reset form
       setContent("")
       setIsOriginal(false)
-      setOriginalLink("")
+      //setOriginalLink("")
       setSelectedFile(null)
     } catch (error) {
       toast({
@@ -161,113 +193,340 @@ export default function CreatePage() {
                   <Switch id="original-toggle" checked={isOriginal} onCheckedChange={setIsOriginal} />
                 </div>
 
-                {/* Creative Commons License Selection */}
-                <div className="space-y-4 p-4 bg-blue-50 rounded-lg">
-                  <Label className="text-sm font-medium">Creative Commons License</Label>
-                  <div className="space-y-3">
-                    <div className="flex items-start space-x-3">
-                      <input
-                        type="radio"
-                        id="cc-by-nc"
-                        name="cc-license"
-                        value="CC BY-NC"
-                        checked={ccLicense === "CC BY-NC"}
-                        onChange={(e) => setCcLicense(e.target.value)}
-                        className="mt-1"
-                      />
-                      <div className="flex-1">
-                        <Label htmlFor="cc-by-nc" className="text-sm font-medium cursor-pointer">
-                          CC BY-NC (Attribution-NonCommercial)
-                        </Label>
-                        <p className="text-xs text-gray-600 mt-1">
-                          This license does not permit commercial use but allows for the creation of derivative works.
-                          Attribution to the original creator is required.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start space-x-3">
-                      <input
-                        type="radio"
-                        id="cc-by-nd"
-                        name="cc-license"
-                        value="CC BY-ND"
-                        checked={ccLicense === "CC BY-ND"}
-                        onChange={(e) => setCcLicense(e.target.value)}
-                        className="mt-1"
-                      />
-                      <div className="flex-1">
-                        <Label htmlFor="cc-by-nd" className="text-sm font-medium cursor-pointer">
-                          CC BY-ND (Attribution-NoDerivs)
-                        </Label>
-                        <p className="text-xs text-gray-600 mt-1">
-                          This license permits commercial use but does not allow the creation of derivative works.
-                          Attribution to the original creator is required.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start space-x-3">
-                      <input
-                        type="radio"
-                        id="cc0"
-                        name="cc-license"
-                        value="CC0"
-                        checked={ccLicense === "CC0"}
-                        onChange={(e) => setCcLicense(e.target.value)}
-                        className="mt-1"
-                      />
-                      <div className="flex-1">
-                        <Label htmlFor="cc0" className="text-sm font-medium cursor-pointer">
-                          CC0 (Public Domain Dedication)
-                        </Label>
-                        <p className="text-xs text-gray-600 mt-1">
-                          This license permits both commercial use and the creation of derivative works, without the
-                          need for attribution.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start space-x-3">
-                      <input
-                        type="radio"
-                        id="cc-by"
-                        name="cc-license"
-                        value="CC BY"
-                        checked={ccLicense === "CC BY"}
-                        onChange={(e) => setCcLicense(e.target.value)}
-                        className="mt-1"
-                      />
-                      <div className="flex-1">
-                        <Label htmlFor="cc-by" className="text-sm font-medium cursor-pointer">
-                          CC BY (Attribution)
-                        </Label>
-                        <p className="text-xs text-gray-600 mt-1">
-                          This license allows both commercial use and the creation of derivative works, but requires
-                          attribution to the original creator.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Original Link Input */}
+                {/* License Selection - Only show when marked as original */}
                 {isOriginal && (
-                  <div className="space-y-2">
-                    <Label htmlFor="original-link" className="flex items-center space-x-2">
-                      <LinkIcon className="h-4 w-4" />
-                      <span>Original Statement Link</span>
-                    </Label>
-                    <Input
-                      id="original-link"
-                      type="url"
-                      placeholder="https://example.com/your-original-work"
-                      value={originalLink}
-                      onChange={(e) => setOriginalLink(e.target.value)}
-                    />
-                    <p className="text-xs text-gray-600">
-                      Provide a link to your original work or statement for verification
-                    </p>
+                  <div className="space-y-4 p-4 bg-blue-50 rounded-lg">
+                    <Label className="text-sm font-medium">License Selection</Label>
+                    
+                    {/* License Type Selection */}
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Token Bound NFT Licenses - Left */}
+                        <div className="space-y-2">
+                          <Button
+                            type="button"
+                            variant={licenseType === 'token-bound-nft' ? 'default' : 'outline'}
+                            className="h-auto p-4 rounded-full w-full"
+                            onClick={() => setLicenseType('token-bound-nft')}
+                            title="Blockchain-based licensing with customizable terms"
+                          >
+                            Token Bound NFT License
+                          </Button>
+                          <p className="text-xs text-gray-600 text-center">
+                            Blockchain-based licensing
+
+
+                          </p>
+                        </div>
+
+                      {/* Creative Commons Licenses - Right */}
+                        <div className="space-y-2">
+                          <Button
+                            type="button"
+                           variant={licenseType === 'creative-commons' ? 'default' : 'outline'}
+                            className="h-auto p-4 rounded-full w-full"
+                            onClick={() => setLicenseType('creative-commons')}
+                            title="Standard Creative Commons licensing options"
+                          >
+                            Creative Commons License
+                         </Button>
+                          <p className="text-xs text-gray-600 text-center">
+                            Standard Creative Commons licensing
+                          </p>
+                        </div>
+
+
+                    </div>
+
+                    {/* Token Bound NFT License Options */}
+                    {licenseType === 'token-bound-nft' && (
+                      <div className="space-y-4 pl-6 border-l-2 border-blue-200">
+                        {/* Commercial Usage */}
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">Commercial Usage</Label>
+                          <div className="flex space-x-4">
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="tbnl-commercial"
+                                value="NC"
+                                checked={tbnlCommercial === 'NC'}
+                                onChange={(e) => setTbnlCommercial(e.target.value as 'C' | 'NC')}
+                              />
+                              <span className="text-sm">Non-Commercial (NC)</span>
+                            </label>
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="tbnl-commercial"
+                                value="C"
+                                checked={tbnlCommercial === 'C'}
+                                onChange={(e) => setTbnlCommercial(e.target.value as 'C' | 'NC')}
+                              />
+                              <span className="text-sm">Commercial (C)</span>
+                            </label>
+                          </div>
+                          {tbnlCommercial === 'C' ? (
+                            <div className="bg-orange-50 p-2 rounded border border-orange-200">
+                              <p className="text-xs text-orange-700">
+                                <strong>Commercial (C):</strong> This license allows the NFT owner to make money from the work, including selling merchandise, licensing for commercial use, and other revenue-generating activities.
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="bg-green-50 p-2 rounded border border-green-200">
+                              <p className="text-xs text-green-700">
+                                <strong>Non-Commercial (NC):</strong> This license does not permit commercial use. The work can be used for personal, educational, or non-profit purposes only.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Derivatives */}
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">Derivatives</Label>
+                          <div className="grid grid-cols-2 gap-2">
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="tbnl-derivatives"
+                                value="D"
+                                checked={tbnlDerivatives === 'D'}
+                                onChange={(e) => setTbnlDerivatives(e.target.value as 'D' | 'DT' | 'DTSA' | 'ND')}
+                              />
+                              <span className="text-sm">Derivatives (D)</span>
+                            </label>
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="tbnl-derivatives"
+                                value="DT"
+                                checked={tbnlDerivatives === 'DT'}
+                                onChange={(e) => setTbnlDerivatives(e.target.value as 'D' | 'DT' | 'DTSA' | 'ND')}
+                              />
+                              <span className="text-sm">Derivatives-NFT (DT)</span>
+                            </label>
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="tbnl-derivatives"
+                                value="DTSA"
+                                checked={tbnlDerivatives === 'DTSA'}
+                                onChange={(e) => setTbnlDerivatives(e.target.value as 'D' | 'DT' | 'DTSA' | 'ND')}
+                              />
+                              <span className="text-sm">Derivatives-NFT-Share-Alike (DTSA)</span>
+                            </label>
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="tbnl-derivatives"
+                                value="ND"
+                                checked={tbnlDerivatives === 'ND'}
+                                onChange={(e) => setTbnlDerivatives(e.target.value as 'D' | 'DT' | 'DTSA' | 'ND')}
+                              />
+                              <span className="text-sm">No-Derivatives (ND)</span>
+                            </label>
+                          </div>
+                          {tbnlDerivatives === 'D' && (
+                            <div className="bg-blue-50 p-2 rounded border border-blue-200">
+                              <p className="text-xs text-blue-700">
+                                <strong>Derivatives (D):</strong> Allows unrestricted creation of derivative works. Others can modify, adapt, and build upon the work in any format or medium.
+                              </p>
+                            </div>
+                          )}
+                          {tbnlDerivatives === 'DT' && (
+                            <div className="bg-purple-50 p-2 rounded border border-purple-200">
+                              <p className="text-xs text-purple-700">
+                                <strong>Derivatives-NFT (DT):</strong> Derivative works are allowed but must be minted as NFTs. This ensures blockchain-based tracking of derivative creations.
+                              </p>
+                            </div>
+                          )}
+                          {tbnlDerivatives === 'DTSA' && (
+                            <div className="bg-indigo-50 p-2 rounded border border-indigo-200">
+                              <p className="text-xs text-indigo-700">
+                                <strong>Derivatives-NFT-Share-Alike (DTSA):</strong> Derivative works must be NFTs and carry the same license terms. This ensures consistent licensing across all derivative works.
+                              </p>
+                            </div>
+                          )}
+                          {tbnlDerivatives === 'ND' && (
+                            <div className="bg-red-50 p-2 rounded border border-red-200">
+                              <p className="text-xs text-red-700">
+                                <strong>No-Derivatives (ND):</strong> Derivative works are not allowed. The work can be used as-is but cannot be modified, adapted, or built upon.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Public License */}
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">Public License</Label>
+                          <div className="flex space-x-4">
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="tbnl-public-license"
+                                value="PL"
+                                checked={tbnlPublicLicense === 'PL'}
+                                onChange={(e) => setTbnlPublicLicense(e.target.value as 'PL' | 'NPL')}
+                              />
+                              <span className="text-sm">Public-License (PL)</span>
+                            </label>
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="tbnl-public-license"
+                                value="NPL"
+                                checked={tbnlPublicLicense === 'NPL'}
+                                onChange={(e) => setTbnlPublicLicense(e.target.value as 'PL' | 'NPL')}
+                              />
+                              <span className="text-sm">No-Public-License (NPL)</span>
+                            </label>
+                          </div>
+                          {tbnlPublicLicense === 'PL' ? (
+                            <div className="bg-green-50 p-2 rounded border border-green-200">
+                              <p className="text-xs text-green-700">
+                                <strong>Public-License (PL):</strong> Grants broad rights to the public to reproduce the work. Anyone can use and distribute the work under the specified terms.
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="bg-amber-50 p-2 rounded border border-amber-200">
+                              <p className="text-xs text-amber-700">
+                                <strong>No-Public-License (NPL):</strong> Restricts rights to the licensee only. The general public does not have automatic rights to reproduce or distribute the work.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Authority */}
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">Authority</Label>
+                          <div className="flex space-x-4">
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="tbnl-authority"
+                                value="Ledger"
+                                checked={tbnlAuthority === 'Ledger'}
+                                onChange={(e) => setTbnlAuthority(e.target.value as 'Ledger' | 'Legal')}
+                              />
+                              <span className="text-sm">Ledger-Authoritative (Ledger)</span>
+                            </label>
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="tbnl-authority"
+                                value="Legal"
+                                checked={tbnlAuthority === 'Legal'}
+                                onChange={(e) => setTbnlAuthority(e.target.value as 'Ledger' | 'Legal')}
+                              />
+                              <span className="text-sm">Legal-Authoritative (Legal)</span>
+                            </label>
+                          </div>
+                          {tbnlAuthority === 'Ledger' ? (
+                            <div className="bg-indigo-50 p-2 rounded border border-indigo-200">
+                              <p className="text-xs text-indigo-700">
+                                <strong>Ledger-Authoritative (Ledger):</strong> The blockchain ledger serves as the final authority for all licensing decisions. Smart contracts automatically enforce terms without possibility of legal override.
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="bg-purple-50 p-2 rounded border border-purple-200">
+                              <p className="text-xs text-purple-700">
+                                <strong>Legal-Authoritative (Legal):</strong> Traditional legal systems retain authority over licensing disputes. Courts and legal institutions can override blockchain-based decisions when necessary.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    {/* Creative Commons License Options */}
+                    {licenseType === 'creative-commons' && (
+                      <div className="space-y-3 pl-6 border-l-2 border-blue-200">
+                        <div className="flex items-start space-x-3">
+                          <input
+                            type="radio"
+                            id="cc-by"
+                            name="cc-license"
+                            value="CC BY"
+                            checked={ccLicense === "CC BY"}
+                            onChange={(e) => setCcLicense(e.target.value)}
+                            className="mt-1"
+                          />
+                          <div className="flex-1">
+                            <Label htmlFor="cc-by" className="text-sm font-medium cursor-pointer">
+                              CC BY (Attribution)
+                            </Label>
+                            <p className="text-xs text-gray-600 mt-1">
+                              This license allows both commercial use and the creation of derivative works, but requires
+                              attribution to the original creator.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <input
+                            type="radio"
+                            id="cc-by-nc"
+                            name="cc-license"
+                            value="CC BY-NC"
+                            checked={ccLicense === "CC BY-NC"}
+                            onChange={(e) => setCcLicense(e.target.value)}
+                            className="mt-1"
+                          />
+                          <div className="flex-1">
+                            <Label htmlFor="cc-by-nc" className="text-sm font-medium cursor-pointer">
+                              CC BY-NC (Attribution-NonCommercial)
+                            </Label>
+                            <p className="text-xs text-gray-600 mt-1">
+                              This license does not permit commercial use but allows for the creation of derivative works.
+                              Attribution to the original creator is required.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start space-x-3">
+                          <input
+                            type="radio"
+                            id="cc-by-nd"
+                            name="cc-license"
+                            value="CC BY-ND"
+                            checked={ccLicense === "CC BY-ND"}
+                            onChange={(e) => setCcLicense(e.target.value)}
+                            className="mt-1"
+                          />
+                          <div className="flex-1">
+                            <Label htmlFor="cc-by-nd" className="text-sm font-medium cursor-pointer">
+                              CC BY-ND (Attribution-NoDerivs)
+                            </Label>
+                            <p className="text-xs text-gray-600 mt-1">
+                              This license permits commercial use but does not allow the creation of derivative works.
+                              Attribution to the original creator is required.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start space-x-3">
+                          <input
+                            type="radio"
+                            id="cc0"
+                            name="cc-license"
+                            value="CC0"
+                            checked={ccLicense === "CC0"}
+                            onChange={(e) => setCcLicense(e.target.value)}
+                            className="mt-1"
+                          />
+                          <div className="flex-1">
+                            <Label htmlFor="cc0" className="text-sm font-medium cursor-pointer">
+                              CC0 (Public Domain Dedication)
+                            </Label>
+                            <p className="text-xs text-gray-600 mt-1">
+                              This license permits both commercial use and the creation of derivative works, without the
+                              need for attribution.
+                            </p>
+                          </div>
+                        </div>
+
+                        
+                      </div>
+                    )}
+
+
                   </div>
                 )}
 
@@ -279,9 +538,9 @@ export default function CreatePage() {
                     onClick={() => {
                       setContent("")
                       setIsOriginal(false)
-                      setOriginalLink("")
+                    //setOriginalLink("")
                       setSelectedFile(null)
-                      setCcLicense("CC BY-NC")
+                      setLicenseType(null)
                     }}
                   >
                     Clear
