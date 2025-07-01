@@ -471,7 +471,7 @@ export default function CreatePage() {
                           />
                           <div className="flex-1">
                             <Label htmlFor="cc-by-nc" className="text-sm font-medium cursor-pointer">
-                              CC BY-NC <strong>(default)</strong>
+                              CC BY-NC (default)
                             </Label>
                             <p className="text-xs text-gray-600 mt-1">
                               CC BY-NC (Attribution-NonCommercial) does not permit commercial use but allows for the creation of derivative works.
