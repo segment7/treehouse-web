@@ -205,11 +205,11 @@ export default function CreatePage() {
                           <Button
                             type="button"
                             variant={licenseType === 'token-bound-nft' ? 'default' : 'outline'}
-                            className="h-auto p-4 rounded-full w-full"
+                            className="h-auto p-3 rounded-full w-full"
                             onClick={() => setLicenseType('token-bound-nft')}
                             title="Blockchain-based licensing with customizable terms"
                           >
-                            Token Bound NFT License
+                            <strong>Token Bound NFT License</strong>
                           </Button>
                           <p className="text-xs text-gray-600 text-center">
                             Blockchain-based licensing
@@ -223,11 +223,11 @@ export default function CreatePage() {
                           <Button
                             type="button"
                            variant={licenseType === 'creative-commons' ? 'default' : 'outline'}
-                            className="h-auto p-4 rounded-full w-full"
+                            className="h-auto p-3 rounded-full w-full"
                             onClick={() => setLicenseType('creative-commons')}
                             title="Standard Creative Commons licensing options"
                           >
-                            Creative Commons License
+                            <strong>Creative Commons License</strong>
                          </Button>
                           <p className="text-xs text-gray-600 text-center">
                             Standard Creative Commons licensing
@@ -252,7 +252,7 @@ export default function CreatePage() {
                                 checked={tbnlCommercial === 'NC'}
                                 onChange={(e) => setTbnlCommercial(e.target.value as 'C' | 'NC')}
                               />
-                              <span className="text-sm">Non-Commercial (NC)</span>
+                              <span className="text-sm">Non-Commercial (default)</span>
                             </label>
                             <label className="flex items-center space-x-2 cursor-pointer">
                               <input
@@ -262,7 +262,7 @@ export default function CreatePage() {
                                 checked={tbnlCommercial === 'C'}
                                 onChange={(e) => setTbnlCommercial(e.target.value as 'C' | 'NC')}
                               />
-                              <span className="text-sm">Commercial (C)</span>
+                              <span className="text-sm">Commercial</span>
                             </label>
                           </div>
                           {tbnlCommercial === 'C' ? (
@@ -292,7 +292,7 @@ export default function CreatePage() {
                                 checked={tbnlDerivatives === 'D'}
                                 onChange={(e) => setTbnlDerivatives(e.target.value as 'D' | 'DT' | 'DTSA' | 'ND')}
                               />
-                              <span className="text-sm">Derivatives (D)</span>
+                              <span className="text-sm">Derivatives (default)</span>
                             </label>
                             <label className="flex items-center space-x-2 cursor-pointer">
                               <input
@@ -302,7 +302,7 @@ export default function CreatePage() {
                                 checked={tbnlDerivatives === 'DT'}
                                 onChange={(e) => setTbnlDerivatives(e.target.value as 'D' | 'DT' | 'DTSA' | 'ND')}
                               />
-                              <span className="text-sm">Derivatives-NFT (DT)</span>
+                              <span className="text-sm">Derivatives-NFT</span>
                             </label>
                             <label className="flex items-center space-x-2 cursor-pointer">
                               <input
@@ -312,7 +312,7 @@ export default function CreatePage() {
                                 checked={tbnlDerivatives === 'DTSA'}
                                 onChange={(e) => setTbnlDerivatives(e.target.value as 'D' | 'DT' | 'DTSA' | 'ND')}
                               />
-                              <span className="text-sm">Derivatives-NFT-Share-Alike (DTSA)</span>
+                              <span className="text-sm">Derivatives-NFT-Share-Alike</span>
                             </label>
                             <label className="flex items-center space-x-2 cursor-pointer">
                               <input
@@ -322,7 +322,7 @@ export default function CreatePage() {
                                 checked={tbnlDerivatives === 'ND'}
                                 onChange={(e) => setTbnlDerivatives(e.target.value as 'D' | 'DT' | 'DTSA' | 'ND')}
                               />
-                              <span className="text-sm">No-Derivatives (ND)</span>
+                              <span className="text-sm">No-Derivatives</span>
                             </label>
                           </div>
                           {tbnlDerivatives === 'D' && (
@@ -367,7 +367,7 @@ export default function CreatePage() {
                                 checked={tbnlPublicLicense === 'PL'}
                                 onChange={(e) => setTbnlPublicLicense(e.target.value as 'PL' | 'NPL')}
                               />
-                              <span className="text-sm">Public-License (PL)</span>
+                              <span className="text-sm">Public-License</span>
                             </label>
                             <label className="flex items-center space-x-2 cursor-pointer">
                               <input
@@ -377,7 +377,7 @@ export default function CreatePage() {
                                 checked={tbnlPublicLicense === 'NPL'}
                                 onChange={(e) => setTbnlPublicLicense(e.target.value as 'PL' | 'NPL')}
                               />
-                              <span className="text-sm">No-Public-License (NPL)</span>
+                              <span className="text-sm">No-Public-License (default)</span>
                             </label>
                           </div>
                           {tbnlPublicLicense === 'PL' ? (
@@ -407,7 +407,7 @@ export default function CreatePage() {
                                 checked={tbnlAuthority === 'Ledger'}
                                 onChange={(e) => setTbnlAuthority(e.target.value as 'Ledger' | 'Legal')}
                               />
-                              <span className="text-sm">Ledger-Authoritative (Ledger)</span>
+                              <span className="text-sm">Ledger-Authoritative</span>
                             </label>
                             <label className="flex items-center space-x-2 cursor-pointer">
                               <input
@@ -417,7 +417,7 @@ export default function CreatePage() {
                                 checked={tbnlAuthority === 'Legal'}
                                 onChange={(e) => setTbnlAuthority(e.target.value as 'Ledger' | 'Legal')}
                               />
-                              <span className="text-sm">Legal-Authoritative (Legal)</span>
+                              <span className="text-sm">Legal-Authoritative (default)</span>
                             </label>
                           </div>
                           {tbnlAuthority === 'Ledger' ? (
@@ -451,10 +451,10 @@ export default function CreatePage() {
                           />
                           <div className="flex-1">
                             <Label htmlFor="cc-by" className="text-sm font-medium cursor-pointer">
-                              CC BY (Attribution)
+                              CC BY
                             </Label>
                             <p className="text-xs text-gray-600 mt-1">
-                              This license allows both commercial use and the creation of derivative works, but requires
+                              CC BY (Attribution) allows both commercial use and the creation of derivative works, but requires
                               attribution to the original creator.
                             </p>
                           </div>
@@ -471,10 +471,10 @@ export default function CreatePage() {
                           />
                           <div className="flex-1">
                             <Label htmlFor="cc-by-nc" className="text-sm font-medium cursor-pointer">
-                              CC BY-NC (Attribution-NonCommercial)
+                              CC BY-NC <strong>(default)</strong>
                             </Label>
                             <p className="text-xs text-gray-600 mt-1">
-                              This license does not permit commercial use but allows for the creation of derivative works.
+                              CC BY-NC (Attribution-NonCommercial) does not permit commercial use but allows for the creation of derivative works.
                               Attribution to the original creator is required.
                             </p>
                           </div>
@@ -492,10 +492,10 @@ export default function CreatePage() {
                           />
                           <div className="flex-1">
                             <Label htmlFor="cc-by-nd" className="text-sm font-medium cursor-pointer">
-                              CC BY-ND (Attribution-NoDerivs)
+                              CC BY-ND
                             </Label>
                             <p className="text-xs text-gray-600 mt-1">
-                              This license permits commercial use but does not allow the creation of derivative works.
+                              CC BY-ND (Attribution-NoDerivs) permits commercial use but does not allow the creation of derivative works.
                               Attribution to the original creator is required.
                             </p>
                           </div>
@@ -513,10 +513,10 @@ export default function CreatePage() {
                           />
                           <div className="flex-1">
                             <Label htmlFor="cc0" className="text-sm font-medium cursor-pointer">
-                              CC0 (Public Domain Dedication)
+                              CC0
                             </Label>
                             <p className="text-xs text-gray-600 mt-1">
-                              This license permits both commercial use and the creation of derivative works, without the
+                              CC0 (Public Domain Dedication) permits both commercial use and the creation of derivative works, without the
                               need for attribution.
                             </p>
                           </div>
