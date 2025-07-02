@@ -59,7 +59,7 @@ export default function CreatePage() {
     if (isOriginal && !licenseType) {
       toast({
         title: "Error",
-        description: "Please select a license for your original statement",
+        description: "Please select a license for your Original Content",
         variant: "destructive",
       })
       return
@@ -100,7 +100,7 @@ export default function CreatePage() {
 
       console.log('Post content:', content)
       console.log('License info:', licenseValue ? { type: "String", key: "license", value: licenseValue } : 'No license')
-      //console.log('Original statement link:', isOriginal ? originalLink : 'Not marked as original')
+      //console.log('Original Content link:', isOriginal ? originalLink : 'Not marked as original')
 
       toast({
         title: "Success",
@@ -110,8 +110,8 @@ export default function CreatePage() {
       // Reset form
       setContent("")
       setIsOriginal(false)
-      //setOriginalLink("")
       setSelectedFile(null)
+      setLicenseType(null)
     } catch (error) {
       toast({
         title: "Error",
@@ -182,15 +182,24 @@ export default function CreatePage() {
                   </div>
                 </div>
 
-                {/* Original Statement Toggle */}
+                {/* Original Content Toggle */}
                 <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
                   <div className="space-y-1">
                     <Label htmlFor="original-toggle" className="text-sm font-medium">
-                      Mark as Original Statement
+                      Mark as Original Content
                     </Label>
-                    <p className="text-xs text-gray-600">This content represents your original work or statement</p>
+                    <p className="text-xs text-gray-600">Enables you to specific a license.</p>
                   </div>
-                  <Switch id="original-toggle" checked={isOriginal} onCheckedChange={setIsOriginal} />
+                  <Switch 
+                  id="original-toggle" 
+                  checked={isOriginal} 
+                  onCheckedChange={(checked) => {
+                      setIsOriginal(checked);
+                      if (!checked) {
+                        setLicenseType(null);
+                      }
+                    }}
+                  />
                 </div>
 
                 {/* License Selection - Only show when marked as original */}
@@ -239,7 +248,7 @@ export default function CreatePage() {
 
                     {/* Token Bound NFT License Options */}
                     {licenseType === 'token-bound-nft' && (
-                      <div className="space-y-4 pl-6 border-l-2 border-blue-200">
+                      <div className="space-y-6 pl-6">
                         {/* Commercial Usage */}
                         <div className="space-y-2">
                           <Label className="text-sm font-medium">Commercial Usage</Label>
@@ -261,6 +270,7 @@ export default function CreatePage() {
                                 value="C"
                                 checked={tbnlCommercial === 'C'}
                                 onChange={(e) => setTbnlCommercial(e.target.value as 'C' | 'NC')}
+                                //className="appearance-none w-3 h-3 rounded-full border border-gray-400 checked:bg-black checked:border-black"
                               />
                               <span className="text-sm">Commercial</span>
                             </label>
@@ -357,7 +367,7 @@ export default function CreatePage() {
 
                         {/* Public License */}
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Public License</Label>
+                          <Label className="text-sm font-medium">Public Rights</Label>
                           <div className="flex space-x-4">
                             <label className="flex items-center space-x-2 cursor-pointer">
                               <input
@@ -438,7 +448,7 @@ export default function CreatePage() {
                     )}
                     {/* Creative Commons License Options */}
                     {licenseType === 'creative-commons' && (
-                      <div className="space-y-3 pl-6 border-l-2 border-blue-200">
+                      <div className="space-y-6 pl-6">
                         <div className="flex items-start space-x-3">
                           <input
                             type="radio"
@@ -530,21 +540,23 @@ export default function CreatePage() {
                   </div>
                 )}
 
-                {/* Submit Button */}
+               
                 <div className="flex justify-end space-x-4">
-                  <Button
+                   {/* Clear Button */}
+                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => {
                       setContent("")
-                      setIsOriginal(false)
-                    //setOriginalLink("")
                       setSelectedFile(null)
+                      setIsOriginal(false)
                       setLicenseType(null)
                     }}
                   >
                     Clear
                   </Button>
+
+                  {/* Publish Button */}
                   <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting ? (
                       <>
